@@ -8,9 +8,13 @@
 #ifndef INCLUDE_ENVIRONMENT_HPP_
 #define INCLUDE_ENVIRONMENT_HPP_
 
+#include <memory>
+
 
 class CEnvironment
 {
+public:
+	CEnvironment();
 
 };
 
