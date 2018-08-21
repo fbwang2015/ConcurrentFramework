@@ -12,6 +12,7 @@ set(src_list main.cpp
     src/agent.cpp
     src/environment.cpp
     src/workflow.cpp
+    src/worker.cpp
 )
 
 add_executable(${PROJECT_NAME} ${src_list})
