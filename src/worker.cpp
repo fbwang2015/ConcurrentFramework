@@ -6,9 +6,4 @@
  */
 #include "worker.hpp"
 
-template<typename T>
-void CWorker<T>::operator ()(CWorkflow<T>& workflow)
-{
-
-}
 

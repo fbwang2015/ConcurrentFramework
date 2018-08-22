@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(concurrent_framework)
 
 add_definitions(-std=c++11)
+SET(CMAKE_CXX_FLAGS -pthread)
 
 include_directories(
 	include
