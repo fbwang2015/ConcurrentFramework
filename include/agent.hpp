@@ -11,6 +11,7 @@
 #include <string>
 #include <memory>
 
+#include "logutil.hpp"
 #include "data_queue.hpp"
 
 template<typename T>
@@ -27,7 +28,7 @@ public:
 	}
 	virtual void process(std::shared_ptr<T> data)
 	{
-
+		std::cout<<"COperator processing"<<std::endl;
 	}
 
 	virtual ~COperator()
@@ -36,24 +37,34 @@ public:
 	}
 };
 
+enum AgentType
+{
+	FirstNode = 0,
+	NormalNode = 1,
+	LastNode = 2
+};
 
 template<typename T>
 class CAgent
 {
 public:
-	CAgent(std::shared_ptr<CWorkflow<T>> workflow, std::string name);
+	CAgent(std::shared_ptr<CWorkflow<T>> workflow, std::string name, COperator<T>& ops, AgentType type = NormalNode);
 
 	void SetWorkflow(std::shared_ptr<CWorkflow<T>> workflow);
 
 	void SetInputDataQueue(std::shared_ptr<CDataQueue<T>> input_data);
 
+	std::shared_ptr<CDataQueue<T>> GetInputDataQueue();
+
 	void SetOutputDataQueue(std::shared_ptr<CDataQueue<T>> output_data);
+
+	std::shared_ptr<CDataQueue<T>> GetOutputDataQueue();
 
 	int GetInputDataCount();
 
 	int GetOutputDataCount();
 
-	void SetOperator(COperator<T> & ops);
+	std::string& GetAgentName();
 
 	void Processing();
 
@@ -61,21 +72,23 @@ public:
 private:
 	std::string m_name;
 
-	COperator<T> m_operator;
+	AgentType m_type;
+
+	COperator<T>& m_operator;
 
 	std::shared_ptr<CWorkflow<T>> m_workflow;
 
 	std::shared_ptr<CDataQueue<T>>  m_inputdata, m_outputdata;
 };
 
-
-
 template<typename T>
-CAgent<T>::CAgent(std::shared_ptr<CWorkflow<T>> workflow, std::string name)
+CAgent<T>::CAgent(std::shared_ptr<CWorkflow<T>> workflow, std::string name, COperator<T>& ops, AgentType type): m_operator(ops)
 {
 	m_workflow = workflow;
 
 	m_name = name;
+
+	m_type = type;
 }
 
 template<typename T>
@@ -92,22 +105,37 @@ void CAgent<T>::SetInputDataQueue(std::shared_ptr<CDataQueue<T>> input_data)
 
 
 template<typename T>
+std::shared_ptr<CDataQueue<T>> CAgent<T>::GetInputDataQueue()
+{
+	return m_inputdata;
+}
+
+
+template<typename T>
 void CAgent<T>::SetOutputDataQueue(std::shared_ptr<CDataQueue<T>> output_data)
 {
 	m_outputdata = output_data;
 }
 
 template<typename T>
-void CAgent<T>::SetOperator(COperator<T> & ops)
+std::shared_ptr<CDataQueue<T>> CAgent<T>::GetOutputDataQueue()
 {
+	return m_outputdata;
+}
 
+
+
+template<typename T>
+std::string& CAgent<T>::GetAgentName()
+{
+	return m_name;
 }
 
 
 template<typename T>
 void CAgent<T>::Processing()
 {
-	m_operator(m_inputdata.GetOneData());
+	m_operator(m_inputdata->GetOneData());
 }
 
 

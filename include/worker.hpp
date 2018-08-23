@@ -8,8 +8,11 @@
 #ifndef INCLUDE_WORKER_HPP_
 #define INCLUDE_WORKER_HPP_
 
-template<typename T>
-class CWorkflow;
+#include <memory>
+
+#include "agent.hpp"
+
+#include <iostream>
 
 template<typename T>
 class CWorker
@@ -24,7 +27,14 @@ private:
 template<typename T>
 void CWorker<T>::operator ()()
 {
+	std::cout<<"============CWorker operator============="<<std::endl;
 
+	std::shared_ptr<CAgent<T>> node = m_workflow.GetNextRequestNode();
+
+	if(node)
+	{
+		node->Processing();
+	}
 }
 
 template<typename T>
