@@ -11,8 +11,7 @@
 #include <memory>
 
 #include "agent.hpp"
-
-#include <iostream>
+#include "logutil.hpp"
 
 template<typename T>
 class CWorker
@@ -27,13 +26,17 @@ private:
 template<typename T>
 void CWorker<T>::operator ()()
 {
-	std::cout<<"============CWorker operator============="<<std::endl;
-
-	std::shared_ptr<CAgent<T>> node = m_workflow.GetNextRequestNode();
-
-	if(node)
+	while(true)
 	{
-		node->Processing();
+		std::shared_ptr<CAgent<T>> node = m_workflow.GetNextRequestNode();
+
+		if(node)
+		{
+			node->Processing();
+		}else
+		{
+			break;
+		}
 	}
 }
 

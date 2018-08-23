@@ -25,6 +25,8 @@ public:
 
 	bool AddOneData(std::shared_ptr<T> data);
 
+	int  GetSize();
+
 private:
 	std::mutex m_mutex;
 
@@ -63,6 +65,12 @@ bool CDataQueue<T>::AddOneData(std::shared_ptr<T> data)
 
 	m_dataqueue.push(data);
 
+}
+
+template<class T>
+int CDataQueue<T>::GetSize()
+{
+	return m_dataqueue.size();
 }
 
 

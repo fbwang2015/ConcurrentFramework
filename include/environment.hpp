@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "logutil.hpp"
 
 class CEnvironment
 {

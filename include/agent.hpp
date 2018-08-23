@@ -9,6 +9,7 @@
 #define INCLUDE_AGENT_HPP_
 
 #include <string>
+#include <atomic>
 #include <memory>
 
 #include "logutil.hpp"
@@ -24,7 +25,10 @@ class COperator
 public:
 	void operator()(std::shared_ptr<T> data)
 	{
-		process(data);
+		if(data)
+		{
+			process(data);
+		}
 	}
 	virtual void process(std::shared_ptr<T> data)
 	{
@@ -62,9 +66,13 @@ public:
 
 	int GetInputDataCount();
 
-	int GetOutputDataCount();
+	int GetProcessedDataCount();
+
+	int GetThreadCount();
 
 	std::string& GetAgentName();
+
+	AgentType GetAgentType();
 
 	void Processing();
 
@@ -79,6 +87,10 @@ private:
 	std::shared_ptr<CWorkflow<T>> m_workflow;
 
 	std::shared_ptr<CDataQueue<T>>  m_inputdata, m_outputdata;
+
+	std::atomic<int> m_processed_count;
+
+	std::atomic<int> m_thread_count;
 };
 
 template<typename T>
@@ -89,6 +101,10 @@ CAgent<T>::CAgent(std::shared_ptr<CWorkflow<T>> workflow, std::string name, COpe
 	m_name = name;
 
 	m_type = type;
+
+	m_processed_count = 0;
+
+	m_thread_count = 0;
 }
 
 template<typename T>
@@ -123,8 +139,6 @@ std::shared_ptr<CDataQueue<T>> CAgent<T>::GetOutputDataQueue()
 	return m_outputdata;
 }
 
-
-
 template<typename T>
 std::string& CAgent<T>::GetAgentName()
 {
@@ -135,7 +149,45 @@ std::string& CAgent<T>::GetAgentName()
 template<typename T>
 void CAgent<T>::Processing()
 {
-	m_operator(m_inputdata->GetOneData());
+	m_thread_count++;
+
+	std::shared_ptr<T> data = m_inputdata->GetOneData();
+
+	if(data)
+	{
+		m_operator(data);
+
+		m_outputdata->AddOneData(data);
+
+		m_processed_count++;
+	}
+
+	m_thread_count--;
+}
+
+template<typename T>
+AgentType CAgent<T>::GetAgentType()
+{
+	return m_type;
+}
+
+template<typename T>
+int CAgent<T>::GetProcessedDataCount()
+{
+	return m_processed_count;
+}
+
+
+template<typename T>
+int CAgent<T>::GetInputDataCount()
+{
+	return m_inputdata->GetSize();
+}
+
+template<typename T>
+int CAgent<T>::GetThreadCount()
+{
+	return m_thread_count;
 }
 
 
