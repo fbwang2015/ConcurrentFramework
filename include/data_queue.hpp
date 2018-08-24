@@ -70,6 +70,7 @@ bool CDataQueue<T>::AddOneData(std::shared_ptr<T> data)
 template<class T>
 int CDataQueue<T>::GetSize()
 {
+	std::lock_guard<std::mutex> lock(m_mutex);
 	return m_dataqueue.size();
 }
 
