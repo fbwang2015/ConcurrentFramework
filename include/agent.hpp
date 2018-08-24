@@ -14,6 +14,7 @@
 
 #include "logutil.hpp"
 #include "data_queue.hpp"
+#include "environment.hpp"
 
 template<typename T>
 class CWorkflow;

@@ -13,6 +13,7 @@
 #include "workflow.hpp"
 #include "agent.hpp"
 #include "data_queue.hpp"
+#include "environment.hpp"
 
 struct DataItem
 {
@@ -64,7 +65,8 @@ class CAgent4Operator:public COperator<T>
 
 int main()
 {
-	std::shared_ptr<CWorkflow<DataItem>> workflow = std::make_shared<CWorkflow<DataItem>>();
+	CEnvironment env;
+	std::shared_ptr<CWorkflow<DataItem>> workflow = std::make_shared<CWorkflow<DataItem>>(env);
 
 	auto op1 = CAgent1Operator<DataItem>();
 	auto op2 = CAgent2Operator<DataItem>();
@@ -86,21 +88,23 @@ int main()
 	workflow->AddEdge(node3, node4);
 
 	std::shared_ptr<CDataQueue<DataItem>> inputdata = workflow->GetInputDataQueue();
+
+	workflow->Start(10);
+
 	int i = 0;
-	while(i < 50)
+	while(true)
 	{
+		i++;
 		std::shared_ptr<DataItem> data = std::make_shared<DataItem>();
+
 		data->name = std::string("item");
 		data->age = i;
 
 		inputdata->AddOneData(data);
 
-		i++;
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
-	workflow->Start(10);
-
-	workflow->Stop();
 	return 0;
 }
 

@@ -9,6 +9,8 @@
 #define INCLUDE_WORKER_HPP_
 
 #include <memory>
+#include <thread>
+#include <chrono>
 
 #include "agent.hpp"
 #include "logutil.hpp"
@@ -35,7 +37,8 @@ void CWorker<T>::operator ()()
 			node->Processing();
 		}else
 		{
-			break;
+			std::cout<<"all agent's data queue is empty, sleep 4s"<<std::endl;
+			std::this_thread::sleep_for(std::chrono::seconds(4));
 		}
 	}
 }

@@ -24,7 +24,7 @@ template<typename T>
 class CWorkflow
 {
 public:
-	CWorkflow();
+	CWorkflow(CEnvironment& env);
 
 	bool AddNode(std::shared_ptr<CAgent<T>> node);
 
@@ -44,6 +44,8 @@ public:
 
 	std::shared_ptr<CAgent<T>> GetNextRequestNode();
 
+	CEnvironment& GetEnvironment();
+
 	void Start(int thread_num);
 
 	bool Stop();
@@ -51,6 +53,8 @@ public:
 
 private:
 	bool m_active;
+
+	CEnvironment& m_env;
 
 	std::mutex m_mutex;
 
@@ -65,7 +69,7 @@ private:
 };
 
 template<typename T>
-CWorkflow<T>::CWorkflow():m_active(false)
+CWorkflow<T>::CWorkflow(CEnvironment& env):m_active(false), m_env(env)
 {
 
 }
@@ -129,8 +133,7 @@ std::shared_ptr<CAgent<T>> CWorkflow<T>::GetNextRequestNode()
 
 	std::shared_ptr<CAgent<T>> next_node = nullptr;
 
-	//if(m_active)
-	if(true)
+	if(m_active)
 	{
 		int process_data_count = 0;
 		for(auto& node : m_vertexs)
@@ -231,6 +234,12 @@ template<typename T>
 std::shared_ptr<CDataQueue<T>> CWorkflow<T>::GetOutputDataQueue()
 {
 	return GetLastNode()->GetOutputDataQueue();
+}
+
+template<typename T>
+CEnvironment& CWorkflow<T>::GetEnvironment()
+{
+	return m_env;
 }
 
 
