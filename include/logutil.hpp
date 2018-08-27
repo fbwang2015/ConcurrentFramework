@@ -18,7 +18,7 @@
 class CLog
 {
 public:
-	CLog* GetInstance();
+	static CLog* GetInstance();
 
 	void Log(std::string& str);
 
@@ -37,9 +37,9 @@ private:
 
 	~CLog();
 
-	CLog* m_log;
+	static CLog* m_log;
 
-	std::mutex m_mutex;
+	static std::mutex m_mutex;
 
 	std::mutex m_msgmutex;
 

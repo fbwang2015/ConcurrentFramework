@@ -8,7 +8,12 @@
 #include "logutil.hpp"
 #include <functional>
 
-CLog::CLog():m_log(nullptr), m_writethread(std::bind(&CLog::Write, this))
+CLog* CLog::m_log = nullptr;
+
+std::mutex CLog::m_mutex;
+
+
+CLog::CLog():m_writethread(std::bind(&CLog::Write, this))
 {
 
 }
@@ -39,12 +44,14 @@ void CLog::Write()
 
 	while(true)
 	{
-		std::lock_guard<std::mutex> lock(m_msgmutex);
-
 		if(!m_msg.empty())
 		{
-			str = m_msg.front();
-			m_msg.pop();
+			std::lock_guard<std::mutex> lock(m_msgmutex);
+			if(!m_msg.empty())
+			{
+				str = m_msg.front();
+				m_msg.pop();
+			}
 		}else
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -57,7 +64,7 @@ void CLog::Write()
 
 void CLog::WriteToFile(std::string& str)
 {
-
+	std::cout<<str<<std::endl;
 }
 
 int CLog::GetMsgQueueSize()
