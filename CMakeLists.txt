@@ -14,6 +14,7 @@ set(src_list main.cpp
     src/environment.cpp
     src/workflow.cpp
     src/worker.cpp
+    src/logutil.cpp
 )
 
 add_executable(${PROJECT_NAME} ${src_list})
